@@ -27,7 +27,7 @@ La estética prevista será un estilo 2D sencillo, con personajes y objetos fác
 
 ### Resumen
 
-Operación Silencio es un juego de sigilo con vista desde arriba en el que un personaje debe infiltrarse en una base, conseguir los objetos necesarios para avanzar y recuperar unos documentos. Para completar la misión tendrá que observar las patrullas, utilizar escondites y activar distracciones sin ser descubierto.
+Operación Silencio es un juego de sigilo con vista desde arriba en el que un personaje debe infiltrarse en una base, conseguir los objetos necesarios para avanzar y recuperar unos documentos. Para completar la misión tendrá que observar las patrullas, utilizar escondites y activar distracciones sin ser descubierto y antes de agotar el tiempo. Al repetir los niveles podrá mejorar sus récords, entrar en la tabla local de mejores tiempos y completar retos de rapidez y sigilo.
 
 ### Pilares de diseño
 
@@ -35,6 +35,7 @@ Operación Silencio es un juego de sigilo con vista desde arriba en el que un pe
 2. **Utilizar el escenario.** Los escondites, las radios, las tarjetas y los interruptores permiten resolver los obstáculos.
 3. **Detección comprensible.** Los campos de visión y una barra de detección ayudarán a entender cuándo existe peligro.
 4. **Aprendizaje progresivo.** El primer nivel presenta las mecánicas y los siguientes las combinan con nuevos obstáculos.
+5. **Mejora personal.** Repetir un nivel permite optimizar la ruta, mejorar el tiempo y completar retos de sigilo.
 
 ### Referencias
 
@@ -46,13 +47,15 @@ Se tomará esa idea general de infiltración para desarrollar una propuesta pequ
 
 El juego se centrará en resolver situaciones de sigilo mediante elementos colocados en el escenario. Cada radio estará relacionada con un guardia concreto y permitirá apartarlo temporalmente de su posición.
 
-El jugador tendrá que combinar las distracciones con los escondites y las rutas disponibles para llegar al objetivo. La acción se desarrollará en tiempo real.
+El jugador tendrá que combinar las distracciones con los escondites y las rutas disponibles para llegar al objetivo. La acción se desarrollará en tiempo real. La rejugabilidad se basará en mejorar los resultados en esos mismos escenarios: terminar más rápido, evitar cualquier sospecha y conseguir una puntuación mayor.
 
 ### Alcance previsto
 
 El proyecto tendrá tres niveles cortos, cada uno en una escena de juego distinta. La primera versión se centrará en cuatro sistemas: esconderse, activar distracciones, conseguir objetos que permitan avanzar y utilizar interruptores.
 
 El personaje no tendrá armas ni ataques. Los guardias seguirán rutas preparadas y las distracciones utilizarán puntos de investigación definidos de antemano.
+
+Se añadirá una capa sencilla de rejugabilidad con un límite de tiempo por nivel, récords personales, una clasificación local, retos y estadísticas. Estos sistemas se incorporarán cuando las mecánicas de sigilo del prototipo sean estables y utilizarán los mismos tres niveles.
 
 ## 3. Historia y ambientación
 
@@ -86,7 +89,9 @@ La historia se contará mediante estos mensajes y el propio escenario.
 
 ### Objetivo
 
-Completar los tres niveles sin ser descubierto. En los dos primeros será necesario conseguir una tarjeta y alcanzar la puerta de salida. En el tercero habrá que recuperar los documentos y llegar al punto de extracción.
+Completar los tres niveles sin ser descubierto y antes de agotar el tiempo de cada nivel. En los dos primeros será necesario conseguir una tarjeta y alcanzar la puerta de salida. En el tercero habrá que recuperar los documentos y llegar al punto de extracción.
+
+Después de completar un nivel, el jugador podrá repetirlo para reducir su tiempo, aumentar su puntuación y conseguir los retos pendientes.
 
 ### Bucle de juego
 
@@ -96,7 +101,8 @@ El jugador repetirá estas acciones:
 2. Identificar una ruta hacia el objetivo.
 3. Esperar, esconderse o activar una distracción.
 4. Cruzar la zona vigilada.
-5. Conseguir el objeto necesario y alcanzar la salida.
+5. Conseguir el objeto necesario y alcanzar la salida antes de que termine el tiempo.
+6. Consultar el resultado y elegir entre continuar o repetir para mejorar la marca.
 
 ### Detección
 
@@ -120,13 +126,13 @@ La detección completa del jugador provocará la derrota. Este comportamiento pe
 
 ### Condiciones de victoria y derrota
 
-**Superación de un nivel:** conseguir el objeto requerido y entrar en la salida correspondiente.
+**Superación de un nivel:** conseguir el objeto requerido y entrar en la salida correspondiente antes de que el contador llegue a cero.
 
 **Victoria final:** recuperar los documentos del tercer nivel y llegar al punto de extracción.
 
-**Derrota:** completar la barra de detección de un guardia o de una cámara activa.
+**Derrota:** completar la barra de detección de un guardia o de una cámara activa, o agotar el tiempo del nivel.
 
-Tras perder, se podrá reiniciar el nivel actual o volver al menú principal. El reinicio restaurará los objetos, puertas, radios y guardias de ese nivel.
+Tras perder, se podrá reiniciar el nivel actual o volver al menú principal. El reinicio restaurará los objetos, puertas, radios, guardias, cronómetro y datos del intento. Los récords, retos conseguidos y estadísticas acumuladas se conservarán.
 
 ### Progresión
 
@@ -138,9 +144,60 @@ Tras perder, se podrá reiniciar el nivel actual o volver al menú principal. El
 
 Cada nivel tendrá su propia distribución. La dificultad aumentará combinando los obstáculos y reduciendo los espacios seguros, manteniendo oportunidades para observar y planificar.
 
+### Contrarreloj
+
+Cada intento tendrá un cronómetro de tiempo transcurrido y un contador de tiempo restante. Como punto de partida se propone un límite de 180 segundos por nivel; se ajustará por separado para cada mapa después de las pruebas.
+
+El tiempo empezará cuando el jugador pueda controlar al personaje. Se detendrá al completar el nivel y quedará congelado durante la pausa y en las pantallas de resultado. Llegar a cero provocará una derrota por tiempo.
+
+### Récords y tabla de mejores tiempos
+
+Se guardará el mejor tiempo personal y una tabla con los cinco mejores tiempos de cada nivel. La clasificación será local, almacenada en el mismo ordenador y conservada al cerrar y abrir el juego.
+
+Solo se registrarán intentos completados correctamente. La tabla se ordenará de menor a mayor tiempo; en caso de empate, se utilizará la puntuación más alta. Se mostrarán posición, tiempo, puntuación y retos conseguidos. El cronómetro conservará suficiente precisión para mostrar centésimas.
+
+Cada nivel tendrá su propia clasificación. El récord se actualizará únicamente cuando se consiga un tiempo menor; repetir un nivel con peor resultado no lo sustituirá.
+
+### Retos de rejugabilidad
+
+| Reto | Condición |
+|---|---|
+| Veloz | Completar el nivel dentro de su tiempo objetivo. Se propone inicialmente 120 segundos, ajustables por nivel |
+| Fantasma | Completar el nivel sin que la barra de detección de ningún guardia o cámara llegue a empezar a llenarse |
+| Experto | Conseguir Veloz y Fantasma en el mismo intento |
+
+Una vez conseguido un reto, quedará marcado como completado en ese nivel. Un intento posterior fallido no borrará el logro.
+
+Para comprobar Fantasma se conservará un indicador de si hubo sospecha durante el intento, aunque después la barra de detección vuelva a cero. Los mapas y los tiempos objetivo se probarán para que los retos sean alcanzables.
+
+### Puntuación
+
+La puntuación se calculará al completar un nivel mediante esta propuesta inicial:
+
+**Puntuación = 1000 puntos por completar + 10 × segundos completos restantes + 500 puntos si se consigue Fantasma.**
+
+Por ejemplo, terminar con 40 segundos restantes y sin generar sospecha daría 1900 puntos. Los valores se ajustarán tras las pruebas. Utilizar radios o escondites no restará puntos, porque forman parte de las herramientas previstas para resolver los niveles.
+
+Los intentos fallidos no entrarán en la clasificación ni actualizarán los récords de tiempo o puntuación.
+
+### Estadísticas
+
+Se guardarán estos datos sencillos:
+
+- Intentos iniciados, contando cada reinicio como un nuevo intento.
+- Intentos completados con éxito, incluyendo las repeticiones de un mismo nivel.
+- Derrotas, diferenciando detección y tiempo agotado.
+- Mejor tiempo y puntuación máxima de cada nivel.
+
+Las estadísticas acumuladas se conservarán entre sesiones. El cronómetro y los indicadores de los retos pertenecerán solo al intento actual y se reiniciarán al volver a jugar.
+
 ### Elementos generales previstos
 
 El proyecto incluirá menú principal, pausa, opciones, créditos y pantallas de victoria y derrota. Las pantallas de resultado permitirán volver a jugar y regresar al menú.
+
+Al completar cada nivel se mostrará un resumen con el tiempo, el récord personal, la puntuación y los retos conseguidos, con opciones para continuar, repetir ese nivel o volver al menú. Tras el tercer nivel, la pantalla de victoria presentará el resultado final y permitirá acceder de nuevo a los niveles completados.
+
+El menú tendrá acceso a una pantalla de Mejores tiempos y estadísticas, con la clasificación de cada nivel. Desde ella se podrá repetir un nivel ya completado para mejorar su marca. El progreso de niveles completados también se conservará entre sesiones.
 
 El menú de opciones permitirá ajustar música y efectos por separado, conservando los valores entre escenas. Habrá música de fondo y sonidos para las acciones principales y la interfaz.
 
@@ -173,6 +230,8 @@ En el último nivel, el jugador tendrá que alcanzar un interruptor para desacti
 
 Como valores iniciales se propone una velocidad del personaje de 3 unidades por segundo y una velocidad de patrulla de 1,5 unidades por segundo. Se modificarán si las pruebas muestran que dificultan demasiado el juego.
 
+El cronómetro, los récords, los retos y las estadísticas utilizarán las acciones de estas mecánicas. Los valores de tiempo y puntuación son propuestas de diseño pendientes de validar en un prototipo.
+
 ## 13. Recursos de terceros
 
 -
@@ -180,6 +239,8 @@ Como valores iniciales se propone una velocidad del personaje de 3 unidades por 
 ## 14. Declaración de uso de IA
 
 He utilizado ChatGPT como apoyo para organizar el contenido del GDD según la plantilla y revisar la ortografía, la gramática y la claridad del texto. La ayuda recibida en este hito se ha centrado en la claridad de la informacion enviada al agente.
+
+En la ampliación del 2026-10-23 se ha utilizado ChatGPT para proponer y documentar el sistema de contrarreloj, mejores tiempos locales, retos, puntuación y estadísticas. Esta ampliación corresponde al diseño del juego; su implementación y sus pruebas están pendientes.
 
 ## 16. Diario de desarrollo
 
@@ -210,3 +271,29 @@ Crear una escena de prueba con un personaje, una pared, un guardia, un escondite
 **Registro en Git**
 
 Añadir esta documentación al repositorio y realizar el commit.
+
+### 2026-10-23: rejugabilidad, tiempos y retos
+
+**Trabajo realizado**
+
+- Ampliación del GDD con un sistema de contrarreloj y una nueva condición de derrota por tiempo.
+- Definición de récords y una tabla local de los cinco mejores tiempos de cada nivel.
+- Propuesta de los retos Veloz, Fantasma y Experto.
+- Definición de una puntuación sencilla y de las estadísticas que se guardarán.
+- Actualización del flujo de resultados para permitir repetir niveles completados.
+
+**Decisiones de diseño**
+
+- Aprovechar los mismos tres niveles para mejorar tiempos y conseguir retos.
+- Guardar los datos de forma local y conservarlos entre sesiones.
+- Separar los datos persistentes de los datos temporales de cada intento.
+- Congelar el cronómetro durante la pausa y las pantallas de resultado.
+- Registrar únicamente intentos completados en la clasificación.
+
+**Siguiente paso**
+
+Después de comprobar el prototipo de sigilo, implementar un cronómetro que respete la pausa y añadir el registro de mejores tiempos. Después se incorporarán los retos, la puntuación y las estadísticas. Habrá que probar los límites de tiempo y que un reinicio conserve los datos persistentes sin conservar los del intento anterior.
+
+**Estado**
+
+Ampliación de diseño y documentación. Los sistemas descritos todavía están pendientes de implementación y pruebas.
